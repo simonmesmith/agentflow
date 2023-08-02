@@ -1,0 +1,13 @@
+{
+    "tasks": [
+        {
+            "action": "Brainstorm five names for a company that makes edible clothes."
+        },
+        {
+            "action": "Choose the best name from the list."
+        },
+        {
+            "action": "Write a tagline to go with the best name from the list."
+        }
+    ]
+}
