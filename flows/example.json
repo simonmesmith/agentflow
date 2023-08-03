@@ -8,6 +8,12 @@
         },
         {
             "action": "Write a tagline to go with the best name from the list."
+        },
+        {
+            "action": "Save the results as a text file.",
+            "settings": {
+                "function_call": "save_file"
+            }
         }
     ]
 }

@@ -1,10 +1,12 @@
 import argparse
+import json
 
 import openai
-from flow_manager import Flow
-from output_manager import Output
 
-import json
+from flow import Flow
+from function import Function
+from output import Output
+
 
 def main():
     parser = argparse.ArgumentParser(description="AgentFlow")
@@ -25,10 +27,13 @@ def run(flow_name: str):
     messages = []
     for task in flow["tasks"]:
         messages.append({"role": "user", "content": task["action"]})
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=messages,
-        )
+        settings = {"model": "gpt-3.5-turbo", "messages": messages}
+        if "settings" in task:
+            if "function_call" in task["settings"]:
+                function = Function(task["settings"]["function_call"])
+                settings["functions"] = [function.definition]
+                settings["function_call"] = task["settings"]["function_call"]
+        response = openai.ChatCompletion.create(**settings)
         messages.append(
             {"role": "assistant", "content": response["choices"][0].message.content}
         )

@@ -18,6 +18,8 @@ charset-normalizer==3.2.0
     # via
     #   aiohttp
     #   requests
+exceptiongroup==1.1.2
+    # via pytest
 frozenlist==1.4.0
     # via
     #   aiohttp
@@ -26,16 +28,26 @@ idna==3.4
     # via
     #   requests
     #   yarl
+iniconfig==2.0.0
+    # via pytest
 multidict==6.0.4
     # via
     #   aiohttp
     #   yarl
 openai==0.27.8
     # via -r requirements.in
+packaging==23.1
+    # via pytest
+pluggy==1.2.0
+    # via pytest
+pytest==7.4.0
+    # via -r requirements.in
 python-dotenv==1.0.0
     # via -r requirements.in
 requests==2.31.0
     # via openai
+tomli==2.0.1
+    # via pytest
 tqdm==4.65.0
     # via openai
 urllib3==2.0.4

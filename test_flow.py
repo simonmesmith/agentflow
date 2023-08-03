@@ -1,7 +1,7 @@
 import json
 import os
 
-from flow_manager import Flow
+from flow import Flow
 
 
 def test_load():
