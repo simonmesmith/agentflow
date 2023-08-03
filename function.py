@@ -17,11 +17,11 @@ class BaseFunction(ABC):
 
 
 class Function:
-    def __init__(self, function_name):
-        self.module = importlib.import_module(function_name)
-        self.function_class = getattr(self.module, function_name.capitalize())
+    def __init__(self, function_name, output):
+        self.module = importlib.import_module(f"functions.{function_name}")
+        self.function_class = getattr(self.module, function_name.replace("_", " ").title().replace(" ", ""))
 
-        self.instance = self.function_class()
+        self.instance = self.function_class(output)
 
     @property
     def definition(self):
