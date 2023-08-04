@@ -1,7 +1,7 @@
 import os
 
-from function import Function
-from output import Output
+from agentflow.function import Function
+from agentflow.output import Output
 
 
 def test_function():

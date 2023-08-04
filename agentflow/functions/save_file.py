@@ -1,4 +1,4 @@
-from function import BaseFunction
+from agentflow.function import BaseFunction
 
 
 class SaveFile(BaseFunction):

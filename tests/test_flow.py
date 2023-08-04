@@ -1,7 +1,7 @@
 import json
 import os
 
-from flow import Flow
+from agentflow.flow import Flow
 
 
 def test_flow():
@@ -22,8 +22,14 @@ def test_flow():
             },
         ],
     }
-    path = os.path.join(os.path.dirname(__file__), "flows", f"{name}.json")
-    json.dump(data, open(path, "w"))
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    root_dir = os.path.dirname(os.path.dirname(current_dir))
+    flows_dir = os.path.join(root_dir, "agentflow", "agentflow", "flows")
+    flow_path = os.path.join(flows_dir, f"{name}.json")
+
+    with open(flow_path, "w") as f:
+        json.dump(data, f)
+
     flow = Flow(name)
     assert flow.name == name
     assert flow.system_message == data["system_message"]
@@ -39,7 +45,7 @@ def test_flow():
             assert (
                 task.settings.temperature == data["tasks"][i]["settings"]["temperature"]
             )
-    os.remove(path)
+    os.remove(flow_path)
 
 
 def test_file_not_found():

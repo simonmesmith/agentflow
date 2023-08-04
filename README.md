@@ -22,7 +22,7 @@ Agentflow is currently in development. To try it:
 
 1. Clone this repository.
 2. Install the dependencies in `requirements.txt`.
-3. Run `python -m agentflow --flow=example` to run the example flow.
+3. Run `python -m run --flow=example` to run the example flow.
 
 ## License
 
