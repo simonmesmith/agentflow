@@ -19,8 +19,8 @@ def test_flow():
             },
             {
                 "action": "Test action 2",
-            }
-        ]
+            },
+        ],
     }
     path = os.path.join(os.path.dirname(__file__), "flows", f"{name}.json")
     json.dump(data, open(path, "w"))
@@ -32,14 +32,19 @@ def test_flow():
         assert task.action == data["tasks"][i]["action"]
         if "settings" in data["tasks"][i]:
             assert task.settings.model == data["tasks"][i]["settings"]["model"]
-            assert task.settings.function_call == data["tasks"][i]["settings"]["function_call"]
-            assert task.settings.temperature == data["tasks"][i]["settings"]["temperature"]
+            assert (
+                task.settings.function_call
+                == data["tasks"][i]["settings"]["function_call"]
+            )
+            assert (
+                task.settings.temperature == data["tasks"][i]["settings"]["temperature"]
+            )
     os.remove(path)
 
 
 def test_file_not_found():
     try:
-        flow = Flow("file_not_found")
+        _ = Flow("file_not_found")
     except FileNotFoundError:
         assert True
     else:
