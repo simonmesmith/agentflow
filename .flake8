@@ -1,2 +1,2 @@
 [flake8]
-extend-ignore = E203, E501, W503, E231 # Conflicts with Black
+extend-ignore = E203,E501,W503,E231
