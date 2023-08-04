@@ -1,4 +1,5 @@
 import importlib
+import json
 from abc import ABC, abstractmethod
 
 
@@ -19,13 +20,16 @@ class BaseFunction(ABC):
 class Function:
     def __init__(self, function_name, output):
         self.module = importlib.import_module(f"functions.{function_name}")
-        self.function_class = getattr(self.module, function_name.replace("_", " ").title().replace(" ", ""))
+        self.function_class = getattr(
+            self.module, function_name.replace("_", " ").title().replace(" ", "")
+        )
 
         self.instance = self.function_class(output)
 
     @property
-    def definition(self):
+    def definition(self) -> dict:
         return self.instance.definition()
 
-    def execute(self, *args, **kwargs):
-        return self.instance.execute(*args, **kwargs)
+    def execute(self, args_json: str) -> str:
+        args_dict = json.loads(args_json)
+        return self.instance.execute(**args_dict)

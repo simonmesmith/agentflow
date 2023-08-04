@@ -2,7 +2,7 @@ from function import BaseFunction
 
 
 class SaveFile(BaseFunction):
-    def definition(self):
+    def definition(self) -> dict:
         return {
             "name": "save_file",
             "description": "Save a file to the output directory.",
@@ -22,5 +22,5 @@ class SaveFile(BaseFunction):
             },
         }
 
-    def execute(self, file_name, file_contents):
+    def execute(self, file_name: str, file_contents: str) -> str:
         return self.output.save(file_name, file_contents)

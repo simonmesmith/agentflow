@@ -1,10 +1,8 @@
 import argparse
-import json
-
-import openai
 
 from flow import Flow
 from function import Function
+from llm import LLM
 from output import Output
 
 
@@ -22,21 +20,34 @@ def main():
 
 
 def run(flow_name: str):
+    llm = LLM()
     flow = Flow(flow_name)
     output = Output(flow.name)
     messages = []
-    for task in flow["tasks"]:
-        messages.append({"role": "user", "content": task["action"]})
-        settings = {"model": "gpt-3.5-turbo", "messages": messages}
-        if "settings" in task:
-            if "function_call" in task["settings"]:
-                function = Function(task["settings"]["function_call"])
-                settings["functions"] = [function.definition]
-                settings["function_call"] = task["settings"]["function_call"]
-        response = openai.ChatCompletion.create(**settings)
-        messages.append(
-            {"role": "assistant", "content": response["choices"][0].message.content}
-        )
+    if flow.system_message:
+        messages.append({"role": "system", "content": flow.system_message})
+    for task in flow.tasks:
+        print(task.action)
+        if task.settings.function_call is not None:
+            function = Function(task.settings.function_call, output)
+            task.settings.function_call = {"name": task.settings.function_call}
+            task.settings.functions = [function.definition]
+        messages.append({"role": "user", "content": task.action})
+        message = llm.respond(task.settings, messages)
+        if message.content:
+            messages.append({"role": "assistant", "content": message.content})
+        elif message.function_call:
+            function_content = function.execute(message.function_call.arguments)
+            messages.append(
+                {
+                    "role": "function",
+                    "content": function_content,
+                    "name": message.function_call.name,
+                }
+            )
+            message = llm.respond(task.settings, messages)
+            if message.content:
+                messages.append({"role": "assistant", "content": message.content})
     output.save("messages.json", messages)
 
 

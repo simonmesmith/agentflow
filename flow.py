@@ -1,14 +1,8 @@
 import json
 import os
 from dataclasses import dataclass, field
-from typing import List, Optional
 
-
-@dataclass
-class Settings:
-    model: str | None = "gpt-4"
-    function_call: str | None = None
-    temperature: float | None = 1.0
+from llm import Settings
 
 
 @dataclass
@@ -21,7 +15,7 @@ class Task:
 class Flow:
     name: str
     system_message: str | None = None
-    tasks: List[Task] = field(default_factory=list)
+    tasks: list[Task] = field(default_factory=list)
 
     def __init__(self, name: str):
         base_path = os.path.join(os.path.dirname(__file__), "flows")
