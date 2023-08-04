@@ -26,7 +26,9 @@ class LLM:
         pass
 
     def respond(self, settings: Settings, messages: list[dict[str, str]]) -> Any:
-        settings_dict = {k:v for k,v in settings.__dict__.items() if v not in (None, [])}
+        settings_dict = {
+            k: v for k, v in settings.__dict__.items() if v not in (None, [])
+        }
         settings_dict["messages"] = messages
         response = openai.ChatCompletion.create(**settings_dict)
         return response.choices[0].message
