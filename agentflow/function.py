@@ -19,7 +19,7 @@ class BaseFunction(ABC):
 
 class Function:
     def __init__(self, function_name, output):
-        self.module = importlib.import_module(f"functions.{function_name}")
+        self.module = importlib.import_module(f"agentflow.functions.{function_name}")
         self.function_class = getattr(
             self.module, function_name.replace("_", " ").title().replace(" ", "")
         )

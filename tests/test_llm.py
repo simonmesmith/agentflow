@@ -1,9 +1,9 @@
 from unittest.mock import MagicMock, patch
 
-from llm import Settings
+from agentflow.llm import Settings
 
 
-@patch("llm.LLM")
+@patch("agentflow.llm.LLM")
 def test_respond(mock_llm_class):
     mock_llm_instance = MagicMock()
     mock_llm_instance.respond.return_value = {

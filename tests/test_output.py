@@ -1,6 +1,6 @@
 import os
 
-from output import Output
+from agentflow.output import Output
 
 
 def test_init():

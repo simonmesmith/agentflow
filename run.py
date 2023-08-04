@@ -1,9 +1,9 @@
 import argparse
 
-from flow import Flow
-from function import Function
-from llm import LLM
-from output import Output
+from agentflow.flow import Flow
+from agentflow.function import Function
+from agentflow.llm import LLM
+from agentflow.output import Output
 
 
 def main():
@@ -49,6 +49,7 @@ def run(flow_name: str):
             if message.content:
                 messages.append({"role": "assistant", "content": message.content})
     output.save("messages.json", messages)
+    print(f"Find outputs at {output.output_path}")
 
 
 if __name__ == "__main__":
