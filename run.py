@@ -15,13 +15,32 @@ def main():
         help="The name of the flow to run. (The part before .json.)",
         dest="flow_name",
     )
+    parser.add_argument(
+        "--variables",
+        nargs="*",
+        help="Variables to be used in the flow. Should be in the format key1=value1 key2=value2. Put key=value pairs in quotes if they contain space.",
+        dest="variables",
+    )
     args = parser.parse_args()
-    run(args.flow_name)
+    variables = parse_variables(args.variables)
+    run(args.flow_name, variables)
 
 
-def run(flow_name: str):
+def parse_variables(variables):
+    if not variables:
+        return {}
+
+    variable_dict = {}
+    for variable in variables:
+        key, value = variable.split("=")
+        variable_dict[key] = value
+
+    return variable_dict
+
+
+def run(flow_name: str, variables: dict):
     llm = LLM()
-    flow = Flow(flow_name)
+    flow = Flow(flow_name, variables)
     output = Output(flow.name)
     messages = []
     if flow.system_message:
