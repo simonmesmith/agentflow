@@ -5,9 +5,6 @@ from typing import Any
 import openai
 from dotenv import load_dotenv
 
-load_dotenv()
-openai.api_key = os.environ["OPENAI_API_KEY"]
-
 
 @dataclass
 class Settings:
@@ -23,7 +20,8 @@ class Settings:
 
 class LLM:
     def __init__(self):
-        pass
+        load_dotenv()
+        openai.api_key = os.environ["OPENAI_API_KEY"]
 
     def respond(self, settings: Settings, messages: list[dict[str, str]]) -> Any:
         settings_dict = {
