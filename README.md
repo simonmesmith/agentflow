@@ -16,13 +16,15 @@ Some tools out there, like AutoGPT and BabyAGI, attempt to solve this by giving 
 
 Agentflow is a middle ground between turn-by-turn conversational interfaces like ChatGPT and Bard, and completely autonomous tools like AutoGPT and BabyAGI. You define workflows in human-readable JSON, and LLMs execute them step-by-step. Workflows can include functions that extend LLMs' capabilities, allowing you to execute complex processes with multiple steps.
 
-## Installation
+## Installation and use
 
 Agentflow is currently in development. To try it:
 
 1. Clone this repository.
 2. Install the dependencies in `requirements.txt`.
 3. Run `python -m run --flow=example` to run the example flow.
+
+To see how variables work, you can run `python -m run --flow=example_with_variables --variables 'market=college students' 'price_point=$50'`.
 
 ## License
 
