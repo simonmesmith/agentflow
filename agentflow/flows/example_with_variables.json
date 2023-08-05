@@ -8,6 +8,15 @@
             "action": "Choose the best idea from the list based on likely purchase intent."
         },
         {
+            "action": "Write a short description of the chosen product."
+        },
+        {
+            "action": "Create an image of the product based on the description.",
+            "settings": {
+                "function_call": "create_image"
+            }
+        },
+        {
             "action": "Come up with five name ideas for the chosen product."
         },
         {
@@ -17,7 +26,10 @@
             "action": "Write a tagline to go with the best name from the list."
         },
         {
-            "action": "Save the product idea, best name, and tagline to a text file.",
+            "action": "Create a simple HTML page with the product name, tagline, description, and image. Refer to the image in the same directory, as <img src=\"image.png\"> and not as <img src=\"/image.png\">."
+        },
+        {
+            "action": "Save the HTML to a .html file.",
             "settings": {
                 "function_call": "save_file"
             }
