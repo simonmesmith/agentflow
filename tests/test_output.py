@@ -1,6 +1,5 @@
 """
-This module contains tests for the Output class in the agentflow package.
-It tests the initialization of the Output object and its save method.
+This module contains tests for the Output class.
 """
 
 import os
