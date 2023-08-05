@@ -1,6 +1,6 @@
 # Agentflow: Complex LLM Workflows from Simple JSON
 
-![Python lint and test](https://github.com/simonmesmith/agentflow/actions/workflows/lint_and_test_python.yml/badge.svg)
+![Python lint and test](https://github.com/simonmesmith/agentflow/actions/workflows/build.yml/badge.svg)
 
 Agentflow is designed to be a powerful yet user-friendly tool for creating and executing workflows powered by large language models (LLMs). With Agentflow, you can:
 
