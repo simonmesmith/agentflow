@@ -46,7 +46,9 @@ Creating flows is straightforward. You can use [example.json](https://github.com
                 "temperature": 0.5
             }
         },
-        ...
+        {
+            "action": "..."
+        }
     ]
 }
 ```
