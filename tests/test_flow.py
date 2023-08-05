@@ -1,3 +1,7 @@
+"""
+This module contains tests for the Flow class.
+"""
+
 import json
 import os
 
@@ -8,6 +12,9 @@ from agentflow.flow import Flow
 
 @pytest.fixture
 def flow_path():
+    """
+    Fixture that returns the path to the test flow file.
+    """
     current_dir = os.path.dirname(os.path.abspath(__file__))
     root_dir = os.path.dirname(os.path.dirname(current_dir))
     flows_dir = os.path.join(root_dir, "agentflow", "agentflow", "flows")
@@ -15,6 +22,9 @@ def flow_path():
 
 
 def test_flow_no_variables(flow_path):
+    """
+    Tests the initialization of the Flow object with no variables.
+    """
     data = {
         "system_message": "Test system message.",
         "tasks": [
@@ -36,6 +46,9 @@ def test_flow_no_variables(flow_path):
 
 
 def test_flow_with_variables_correct_values(flow_path):
+    """
+    Tests the initialization of the Flow object with correct variable values.
+    """
     data = {
         "system_message": "Test system message with {variable}.",
         "tasks": [
@@ -56,6 +69,9 @@ def test_flow_with_variables_correct_values(flow_path):
 
 
 def test_flow_with_variables_extra_values(flow_path):
+    """
+    Tests the initialization of the Flow object with extra variable values.
+    """
     data = {
         "system_message": "Test system message.",
         "tasks": [
@@ -74,6 +90,9 @@ def test_flow_with_variables_extra_values(flow_path):
 
 
 def test_flow_with_variables_missing_values(flow_path):
+    """
+    Tests the initialization of the Flow object with missing variable values.
+    """
     data = {
         "system_message": "Test system message with {variable}.",
         "tasks": [
@@ -92,6 +111,9 @@ def test_flow_with_variables_missing_values(flow_path):
 
 
 def test_flow_with_escaped_curly_braces(flow_path):
+    """
+    Tests the initialization of the Flow object with escaped curly braces in the system message and tasks.
+    """
     data = {
         "system_message": "Test system message with {{escaped}} braces.",
         "tasks": [
@@ -116,5 +138,8 @@ def test_flow_with_escaped_curly_braces(flow_path):
 
 
 def test_file_not_found():
+    """
+    Tests the initialization of the Flow object with a non-existent flow file.
+    """
     with pytest.raises(FileNotFoundError):
         _ = Flow("file_not_found")

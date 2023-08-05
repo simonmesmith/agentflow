@@ -1,9 +1,17 @@
+"""
+This module is used to run Agentflow flows. To run one, use the following command:
+python -m run --flow=<flow name> --variables '<variable>=<value>' '<variable>=<value>'
+"""
+
 import argparse
 
 from agentflow.flow import Flow
 
 
-def main():
+def main() -> None:
+    """
+    The main function that parses command line arguments and runs the specified flow.
+    """
     parser = argparse.ArgumentParser(description="AgentFlow")
     parser.add_argument(
         "--flow",
@@ -24,7 +32,16 @@ def main():
     flow.run()
 
 
-def parse_variables(variables):
+def parse_variables(variables: list[str]) -> dict[str, str]:
+    """
+    Parses the variables provided as command line arguments.
+
+    Args:
+        variables (list[str]): A list of strings where each string is a key-value pair in the format 'key=value'.
+
+    Returns:
+        dict[str, str]: A dictionary where the keys are the variable names and the values are the corresponding values.
+    """
     if not variables:
         return {}
 
