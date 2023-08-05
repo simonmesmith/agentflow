@@ -35,7 +35,7 @@ Creating flows is straightforward. You can use [example.json](https://github.com
 ```json
 {
     "system_message": "An optional message that guides the model's behavior.",
-    "tasks: [
+    "tasks": [
         {
             "action": "Instruct the LLM here!"
         },
