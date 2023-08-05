@@ -45,17 +45,31 @@ def run(flow_name: str, variables: dict):
     messages = []
     if flow.system_message:
         messages.append({"role": "system", "content": flow.system_message})
+    functions = []
     for task in flow.tasks:
-        print(task.action)
         if task.settings.function_call is not None:
             function = Function(task.settings.function_call, output)
-            task.settings.function_call = {"name": task.settings.function_call}
-            task.settings.functions = [function.definition]
+            functions.append(function.definition)
+
+    for task in flow.tasks:
+        print("Flow:", task.action)
+        print("Function:", task.settings.function_call)
         messages.append({"role": "user", "content": task.action})
-        message = llm.respond(task.settings, messages)
+
+        task.settings.function_call = (
+            "none"
+            if task.settings.function_call is None
+            else {"name": task.settings.function_call}
+        )
+
+        message = llm.respond(task.settings, messages, functions)
+
         if message.content:
+            print("Assistant: ", message.content)
             messages.append({"role": "assistant", "content": message.content})
+
         elif message.function_call:
+            function = Function(message.function_call.name, output)
             function_content = function.execute(message.function_call.arguments)
             messages.append(
                 {
@@ -64,9 +78,10 @@ def run(flow_name: str, variables: dict):
                     "name": message.function_call.name,
                 }
             )
-            message = llm.respond(task.settings, messages)
-            if message.content:
-                messages.append({"role": "assistant", "content": message.content})
+            task.settings.function_call = "none"
+            message = llm.respond(task.settings, messages, functions)
+            messages.append({"role": "assistant", "content": message.content})
+            print("Assistant: ", message.content)
     output.save("messages.json", messages)
     print(f"Find outputs at {output.output_path}")
 
