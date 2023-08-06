@@ -1,3 +1,7 @@
+"""
+This module contains a test for the CreateImage class in the agentflow.functions.create_image module. It uses the unittest.mock library to mock the OpenAI and requests APIs, and checks that the image creation process works correctly.
+"""
+
 import os
 import re
 from unittest.mock import MagicMock, patch
@@ -9,6 +13,15 @@ from agentflow.output import Output
 @patch("openai.Image.create")
 @patch("requests.get")
 def test_execute(mock_get, mock_create):
+    """
+    Tests the execute method of the CreateImage class. It mocks the OpenAI and requests APIs, and checks that the image creation process works correctly.
+
+    :param mock_get: A mock for the requests.get function.
+    :type mock_get: MagicMock
+    :param mock_create: A mock for the openai.Image.create function.
+    :type mock_create: MagicMock
+    """
+    # Mock the openai.Image.create call to return a mock response with a mock image URL
     mock_create.return_value = {"data": [{"url": "https://mockurl.com/mock_image.jpg"}]}
 
     # Mock the requests.get call to return a mock response with mock image content
@@ -27,5 +40,6 @@ def test_execute(mock_get, mock_create):
     with open(f"{output.output_path}/{result}", "rb") as f:
         assert f.read() == b"mock image content"
 
+    # Clean up the test environment by removing the created file and directory
     os.remove(f"{output.output_path}/{result}")
     os.rmdir(output.output_path)

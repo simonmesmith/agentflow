@@ -2,6 +2,7 @@
 This module contains tests for the Output class.
 """
 
+import json
 import os
 
 from agentflow.output import Output
@@ -27,12 +28,19 @@ def test_save():
     txt_file_path = os.path.join(output.output_path, "test.txt")
     output.save("test.txt", "test_output_save")
     assert os.path.exists(txt_file_path), "Text file was not saved correctly"
+    with open(txt_file_path, "r") as f:
+        assert f.read() == "test_output_save", "Text file content is incorrect"
     os.remove(txt_file_path)
 
     # Test saving a JSON file
     json_file_path = os.path.join(output.output_path, "test.json")
     output.save("test.json", [{"test": "test1"}, {"test": "test2"}])
     assert os.path.exists(json_file_path), "JSON file was not saved correctly"
+    with open(json_file_path, "r") as f:
+        assert json.load(f) == [
+            {"test": "test1"},
+            {"test": "test2"},
+        ], "JSON file content is incorrect"
     os.remove(json_file_path)
 
     os.rmdir(output.output_path)
