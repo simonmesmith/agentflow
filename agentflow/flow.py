@@ -1,3 +1,8 @@
+"""
+This module defines the Flow and Task classes which are used to load and execute a series of tasks defined in a JSON file.
+Each task is processed by the LLM (Large Language Model) and the results are saved in a JSON file.
+"""
+
 import json
 import os
 import re
@@ -8,19 +13,43 @@ from agentflow.output import Output
 
 
 class Task:
+    """
+    Represents a task to be processed by the LLM.
+
+    :param action: The action to be performed by the task.
+    :type action: str
+    :param settings: Settings for the task. Defaults to an empty Settings object.
+    :type settings: Settings, optional
+    """
+
     def __init__(self, action: str, settings: Settings = None):
         self.action = action
         self.settings = settings if settings else Settings()
 
 
 class Flow:
+    """
+    Represents a flow of tasks loaded from a JSON file.
+
+    :param name: The name of the flow.
+    :type name: str
+    :param variables: Variables to be used in the flow. Defaults to an empty dictionary.
+    :type variables: dict, optional
+    """
+
     def __init__(self, name: str, variables: dict = None):
         self.name = name
         self._load_flow(name)
         self._validate_and_format_messages(variables or {})
 
-    def _load_flow(self, name: str):
-        """Load flow from a JSON file."""
+    def _load_flow(self, name: str) -> None:
+        """
+        Load flow from a JSON file.
+
+        :param name: The name of the flow.
+        :type name: str
+        :raises FileNotFoundError: If the JSON file does not exist.
+        """
         base_path = os.path.join(os.path.dirname(__file__), "flows")
         file_path = f"{base_path}/{name}.json"
 
@@ -36,8 +65,14 @@ class Flow:
             for task in data.get("tasks", [])
         ]
 
-    def _validate_and_format_messages(self, variables: dict):
-        """Validate and format messages with provided variables."""
+    def _validate_and_format_messages(self, variables: dict) -> None:
+        """
+        Validate and format messages with provided variables.
+
+        :param variables: Variables to be used in the flow.
+        :type variables: dict
+        :raises ValueError: If there are extra or missing variables.
+        """
         all_messages = [self.system_message] + [task.action for task in self.tasks]
         all_variables = set(
             match.group(1)
@@ -58,8 +93,13 @@ class Flow:
 
         self._format_messages(variables)
 
-    def _format_messages(self, variables: dict):
-        """Format messages with provided variables."""
+    def _format_messages(self, variables: dict) -> None:
+        """
+        Format messages with provided variables.
+
+        :param variables: Variables to be used in the flow.
+        :type variables: dict
+        """
         if self.system_message:
             self.system_message = self._format_message(self.system_message, variables)
         for task in self.tasks:
@@ -68,11 +108,24 @@ class Flow:
 
     @staticmethod
     def _format_message(message: str, variables: dict) -> str:
-        """Format a single message with provided variables."""
+        """
+        Format a single message with provided variables.
+
+        :param message: The message to be formatted.
+        :type message: str
+        :param variables: Variables to be used in the flow.
+        :type variables: dict
+        :return: The formatted message.
+        :rtype: str
+        """
         return message.format(**variables).replace("{{", "{").replace("}}", "}")
 
     def run(self):
-        """Run the flow."""
+        """
+        Run the flow.
+
+        The flow is processed by the LLM and the results are saved in a JSON file.
+        """
         llm = LLM()
         output = Output(self.name)
         messages = self._get_initial_messages()
@@ -85,14 +138,26 @@ class Flow:
         print(f"Find outputs at {output.output_path}")
 
     def _get_initial_messages(self) -> list:
-        """Get initial system and user messages."""
+        """
+        Get initial system and user messages.
+
+        :return: A list of initial messages.
+        :rtype: list
+        """
         messages = []
         if self.system_message:
             messages.append({"role": "system", "content": self.system_message})
         return messages
 
     def _get_functions(self, output: Output) -> list:
-        """Get function definitions for tasks with function calls."""
+        """
+        Get function definitions for tasks with function calls.
+
+        :param output: The output object.
+        :type output: Output
+        :return: A list of function definitions.
+        :rtype: list
+        """
         return [
             Function(task.settings.function_call, output).definition
             for task in self.tasks
@@ -102,7 +167,20 @@ class Flow:
     def _process_task(
         self, task: Task, llm: LLM, messages: list, functions: list, output: Output
     ):
-        """Process a single task."""
+        """
+        Process a single task.
+
+        :param task: The task to be processed.
+        :type task: Task
+        :param llm: The LLM object.
+        :type llm: LLM
+        :param messages: A list of messages.
+        :type messages: list
+        :param functions: A list of function definitions.
+        :type functions: list
+        :param output: The output object.
+        :type output: Output
+        """
         print("Flow:", task.action)
         print("Function:", task.settings.function_call)
         messages.append({"role": "user", "content": task.action})
@@ -121,8 +199,15 @@ class Flow:
             self._process_function_call(message, task, llm, messages, functions, output)
 
     @staticmethod
-    def _process_message(message, messages: list):
-        """Process a message from the assistant."""
+    def _process_message(message, messages: list) -> None:
+        """
+        Process a message from the assistant.
+
+        :param message: The message from the assistant.
+        :type message: Message
+        :param messages: A list of messages.
+        :type messages: list
+        """
         print("Assistant: ", message.content)
         messages.append({"role": "assistant", "content": message.content})
 
@@ -134,8 +219,23 @@ class Flow:
         messages: list,
         functions: list,
         output: Output,
-    ):
-        """Process a function call from the assistant."""
+    ) -> None:
+        """
+        Process a function call from the assistant.
+
+        :param message: The message from the assistant.
+        :type message: Message
+        :param task: The task to be processed.
+        :type task: Task
+        :param llm: The LLM object.
+        :type llm: LLM
+        :param messages: A list of messages.
+        :type messages: list
+        :param functions: A list of function definitions.
+        :type functions: list
+        :param output: The output object.
+        :type output: Output
+        """
         function = Function(message.function_call.name, output)
         function_content = function.execute(message.function_call.arguments)
         messages.append(

@@ -1,8 +1,22 @@
+"""
+This module contains a class for saving a file to the output directory. The file's name and contents are provided as parameters.
+"""
+
 from agentflow.function import BaseFunction
 
 
 class SaveFile(BaseFunction):
+    """
+    This class inherits from the BaseFunction class. It defines a function for saving a file to the output directory.
+    """
+
     def definition(self) -> dict:
+        """
+        Returns a dictionary that defines the function. It includes the function's name, description, and parameters.
+
+        :return: A dictionary that defines the function.
+        :rtype: dict
+        """
         return {
             "name": "save_file",
             "description": "Save a file to the output directory.",
@@ -23,4 +37,14 @@ class SaveFile(BaseFunction):
         }
 
     def execute(self, file_name: str, file_contents: str) -> str:
+        """
+        Saves a file to the output directory. The file's name and contents are provided as parameters.
+
+        :param file_name: The name of the file, including its extension. For example, test.txt.
+        :type file_name: str
+        :param file_contents: The contents of the file.
+        :type file_contents: str
+        :return: The name of the saved file.
+        :rtype: str
+        """
         return self.output.save(file_name, file_contents)
