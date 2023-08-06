@@ -35,10 +35,13 @@ class Flow:
     :type name: str
     :param variables: Variables to be used in the flow. Defaults to an empty dictionary.
     :type variables: dict, optional
+    :param flows_path: The base path to the flows directory. If not set, will be agentflow/flows.
+    :type flows_path: str, optional
     """
 
-    def __init__(self, name: str, variables: dict = None):
+    def __init__(self, name: str, variables: dict = None, flows_path: str = None):
         self.name = name
+        self.flows_path = flows_path or os.path.join(os.path.dirname(__file__), "flows")
         self._load_flow(name)
         self._validate_and_format_messages(variables or {})
 
@@ -50,8 +53,8 @@ class Flow:
         :type name: str
         :raises FileNotFoundError: If the JSON file does not exist.
         """
-        base_path = os.path.join(os.path.dirname(__file__), "flows")
-        file_path = f"{base_path}/{name}.json"
+
+        file_path = f"{self.flows_path}/{name}.json"
 
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"File not found: {file_path}.")

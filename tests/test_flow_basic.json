@@ -1,0 +1,14 @@
+{
+    "system_message": "Test system message.",
+    "tasks": [
+        {
+            "action": "Task 1 action."
+        },
+        {
+            "action": "Task 2 action."
+        },
+        {
+            "action": "Task 3 action."
+        }
+    ]
+}

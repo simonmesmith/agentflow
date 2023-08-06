@@ -15,9 +15,6 @@ def test_respond(mock_llm_class):
     The LLM class and its respond method are mocked. The test checks if the respond method
     is called correctly and if it returns a non-None value when called with a settings object
     and a list of messages.
-
-    :param mock_llm_class: Mock of the LLM class
-    :type mock_llm_class: MagicMock
     """
     mock_llm_instance = MagicMock()
     mock_llm_instance.respond.return_value = {
