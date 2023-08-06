@@ -15,11 +15,6 @@ from agentflow.output import Output
 def test_execute(mock_get, mock_create):
     """
     Tests the execute method of the CreateImage class. It mocks the OpenAI and requests APIs, and checks that the image creation process works correctly.
-
-    :param mock_get: A mock for the requests.get function.
-    :type mock_get: MagicMock
-    :param mock_create: A mock for the openai.Image.create function.
-    :type mock_create: MagicMock
     """
     # Mock the openai.Image.create call to return a mock response with a mock image URL
     mock_create.return_value = {"data": [{"url": "https://mockurl.com/mock_image.jpg"}]}

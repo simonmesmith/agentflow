@@ -35,12 +35,19 @@ class Flow:
     :type name: str
     :param variables: Variables to be used in the flow. Defaults to an empty dictionary.
     :type variables: dict, optional
+    :param flows_path: The base path to the flows directory. If not set, will be agentflow/flows.
+    :type flows_path: str, optional
     """
 
-    def __init__(self, name: str, variables: dict = None):
+    def __init__(self, name: str, variables: dict = None, flows_path: str = None):
         self.name = name
+        self.flows_path = flows_path or os.path.join(os.path.dirname(__file__), "flows")
         self._load_flow(name)
         self._validate_and_format_messages(variables or {})
+        self.output = Output(name)
+        self.messages = self._get_initial_messages()
+        self.functions = self._get_functions()
+        self.llm = LLM()
 
     def _load_flow(self, name: str) -> None:
         """
@@ -50,8 +57,8 @@ class Flow:
         :type name: str
         :raises FileNotFoundError: If the JSON file does not exist.
         """
-        base_path = os.path.join(os.path.dirname(__file__), "flows")
-        file_path = f"{base_path}/{name}.json"
+
+        file_path = f"{self.flows_path}/{name}.json"
 
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"File not found: {file_path}.")
@@ -85,11 +92,11 @@ class Flow:
 
         extra_variables = set(variables.keys()) - all_variables
         if extra_variables:
-            raise ValueError(f"Extra variables provided: {extra_variables}")
+            raise ValueError(f"Extra variables provided: {extra_variables}.")
 
         missing_variables = all_variables - set(variables.keys())
         if missing_variables:
-            raise ValueError(f"Missing variable values for: {missing_variables}")
+            raise ValueError(f"Missing variable values for: {missing_variables}.")
 
         self._format_messages(variables)
 
@@ -126,16 +133,11 @@ class Flow:
 
         The flow is processed by the LLM and the results are saved in a JSON file.
         """
-        llm = LLM()
-        output = Output(self.name)
-        messages = self._get_initial_messages()
-        functions = self._get_functions(output)
-
         for task in self.tasks:
-            self._process_task(task, llm, messages, functions, output)
+            self._process_task(task)
 
-        output.save("messages.json", messages)
-        print(f"Find outputs at {output.output_path}")
+        self.output.save("messages.json", self.messages)
+        print(f"Find outputs at {self.output.output_path}")
 
     def _get_initial_messages(self) -> list:
         """
@@ -149,41 +151,26 @@ class Flow:
             messages.append({"role": "system", "content": self.system_message})
         return messages
 
-    def _get_functions(self, output: Output) -> list:
+    def _get_functions(self) -> list:
         """
         Get function definitions for tasks with function calls.
-
-        :param output: The output object.
-        :type output: Output
-        :return: A list of function definitions.
-        :rtype: list
         """
         return [
-            Function(task.settings.function_call, output).definition
+            Function(task.settings.function_call, self.output).definition
             for task in self.tasks
             if task.settings.function_call is not None
         ]
 
-    def _process_task(
-        self, task: Task, llm: LLM, messages: list, functions: list, output: Output
-    ):
+    def _process_task(self, task: Task):
         """
         Process a single task.
 
         :param task: The task to be processed.
         :type task: Task
-        :param llm: The LLM object.
-        :type llm: LLM
-        :param messages: A list of messages.
-        :type messages: list
-        :param functions: A list of function definitions.
-        :type functions: list
-        :param output: The output object.
-        :type output: Output
         """
         print("Flow:", task.action)
         print("Function:", task.settings.function_call)
-        messages.append({"role": "user", "content": task.action})
+        self.messages.append({"role": "user", "content": task.action})
 
         task.settings.function_call = (
             "none"
@@ -191,35 +178,24 @@ class Flow:
             else {"name": task.settings.function_call}
         )
 
-        message = llm.respond(task.settings, messages, functions)
+        message = self.llm.respond(task.settings, self.messages, self.functions)
 
         if message.content:
-            self._process_message(message, messages)
+            self._process_message(message)
         elif message.function_call:
-            self._process_function_call(message, task, llm, messages, functions, output)
+            self._process_function_call(message, task)
 
-    @staticmethod
-    def _process_message(message, messages: list) -> None:
+    def _process_message(self, message) -> None:
         """
         Process a message from the assistant.
 
         :param message: The message from the assistant.
         :type message: Message
-        :param messages: A list of messages.
-        :type messages: list
         """
         print("Assistant: ", message.content)
-        messages.append({"role": "assistant", "content": message.content})
+        self.messages.append({"role": "assistant", "content": message.content})
 
-    def _process_function_call(
-        self,
-        message,
-        task: Task,
-        llm: LLM,
-        messages: list,
-        functions: list,
-        output: Output,
-    ) -> None:
+    def _process_function_call(self, message, task: Task) -> None:
         """
         Process a function call from the assistant.
 
@@ -227,18 +203,10 @@ class Flow:
         :type message: Message
         :param task: The task to be processed.
         :type task: Task
-        :param llm: The LLM object.
-        :type llm: LLM
-        :param messages: A list of messages.
-        :type messages: list
-        :param functions: A list of function definitions.
-        :type functions: list
-        :param output: The output object.
-        :type output: Output
         """
-        function = Function(message.function_call.name, output)
+        function = Function(message.function_call.name, self.output)
         function_content = function.execute(message.function_call.arguments)
-        messages.append(
+        self.messages.append(
             {
                 "role": "function",
                 "content": function_content,
@@ -246,5 +214,5 @@ class Flow:
             }
         )
         task.settings.function_call = "none"
-        message = llm.respond(task.settings, messages, functions)
-        self._process_message(message, messages)
+        message = self.llm.respond(task.settings, self.messages, self.functions)
+        self._process_message(message, self.messages)
