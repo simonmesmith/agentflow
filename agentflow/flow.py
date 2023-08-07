@@ -215,4 +215,4 @@ class Flow:
         )
         task.settings.function_call = "none"
         message = self.llm.respond(task.settings, self.messages, self.functions)
-        self._process_message(message, self.messages)
+        self._process_message(message)

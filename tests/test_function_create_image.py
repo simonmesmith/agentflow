@@ -26,15 +26,16 @@ def test_execute(mock_get, mock_create):
 
     output = Output("test_create_image_execute")
     create_image = CreateImage(output)
-    result = create_image.execute("a white siamese cat", 1, "1024x1024")
+    image_path = create_image.execute("a white siamese cat", 1, "1024x1024")
 
     # Check that the returned image name is a valid SHA-256 hash followed by ".png"
-    assert re.match(r"[0-9a-f]{64}\.png$", result) is not None
+    image_file_name = image_path.split("/")[-1]
+    assert re.match(r"[0-9a-f]{64}\.png$", image_file_name) is not None
 
     # Check that the image file was created with the correct content
-    with open(f"{output.output_path}/{result}", "rb") as f:
+    with open(image_path, "rb") as f:
         assert f.read() == b"mock image content"
 
     # Clean up the test environment by removing the created file and directory
-    os.remove(f"{output.output_path}/{result}")
+    os.remove(image_path)
     os.rmdir(output.output_path)

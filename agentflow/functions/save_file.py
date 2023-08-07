@@ -10,7 +10,7 @@ class SaveFile(BaseFunction):
     This class inherits from the BaseFunction class. It defines a function for saving a file to the output directory.
     """
 
-    def definition(self) -> dict:
+    def get_definition(self) -> dict:
         """
         Returns a dictionary that defines the function. It includes the function's name, description, and parameters.
 
