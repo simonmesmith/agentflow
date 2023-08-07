@@ -23,9 +23,8 @@ class BaseFunction(ABC):
         """
         self.output = output
 
-    @property
     @abstractmethod
-    def definition(self) -> dict:
+    def get_definition(self) -> dict:
         """
         Returns the definition of the function.
 
@@ -74,7 +73,7 @@ class Function:
         :return: The definition of the function instance.
         :rtype: dict
         """
-        return self.instance.definition
+        return self.instance.get_definition()
 
     def execute(self, args_json: str) -> str:
         """

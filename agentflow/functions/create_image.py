@@ -16,7 +16,7 @@ class CreateImage(BaseFunction):
     This class inherits from the BaseFunction class. It defines a function for creating an image from a description using OpenAI's API.
     """
 
-    def definition(self) -> dict:
+    def get_definition(self) -> dict:
         """
         Returns a dictionary that defines the function. It includes the function's name, description, and parameters.
 
@@ -48,13 +48,14 @@ class CreateImage(BaseFunction):
         :type n: int, optional
         :param size: The size of the image. Defaults to "1024x1024". Currently, only "1024x1024" is supported.
         :type size: str, optional
-        :return: The name of the image file.
+        :return: The path to the image.
         :rtype: str
         """
         image_name = self._generate_image_name(prompt)
         image_url = self._create_image(prompt, n, size)
-        self._download_and_save_image(image_url, image_name)
-        return image_name
+        image_path = f"{self.output.output_path}/{image_name}"
+        self._download_and_save_image(image_url, image_path)
+        return image_path
 
     def _generate_image_name(self, prompt: str) -> str:
         """
@@ -84,16 +85,15 @@ class CreateImage(BaseFunction):
         response = openai.Image.create(prompt=prompt, n=n, size=size)
         return response["data"][0]["url"]
 
-    def _download_and_save_image(self, image_url: str, image_name: str) -> None:
+    def _download_and_save_image(self, image_url: str, image_path: str) -> None:
         """
-        Downloads the image and saves it to a specified output path.
+        Downloads the image and saves it to the specified path.
 
         :param image_url: The URL of the image.
         :type image_url: str
-        :param image_name: The name of the image file.
-        :type image_name: str
+        :param image_path: The path to the image.
+        :type image_path: str
         """
-        image_path = f"{self.output.output_path}/{image_name}"
         image_data = requests.get(image_url).content
         with open(image_path, "wb") as handler:
             handler.write(image_data)

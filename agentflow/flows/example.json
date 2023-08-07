@@ -26,7 +26,7 @@
             "action": "Write a tagline to go with the best name from the list."
         },
         {
-            "action": "Create a simple HTML page with the product name, tagline, description, and image. Refer to the image in the same directory, as <img src=\"image.png\"> and not as <img src=\"/image.png\">."
+            "action": "Create a simple HTML page with the product name, tagline, description, and image."
         },
         {
             "action": "Save the HTML to a .html file.",
