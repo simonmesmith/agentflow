@@ -19,7 +19,7 @@ class SaveFile(BaseFunction):
         """
         return {
             "name": "save_file",
-            "description": "Save a file to the output directory.",
+            "description": "Saves a file. Returns the path to the file.",
             "parameters": {
                 "type": "object",
                 "properties": {

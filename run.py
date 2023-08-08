@@ -5,9 +5,12 @@ This module is used to run Agentflow flows. To run one, use the following comman
 
     python -m run --flow=<flow name> --variables '<variable>=<value>' '<variable>=<value>'
 
+Optionally, use -v for verbose output.
+
 """
 
 import argparse
+import logging
 
 from agentflow.flow import Flow
 
@@ -30,8 +33,16 @@ def main() -> None:
         help="Variables to be used in the flow. Should be in the format key1=value1 key2=value2. Put key=value pairs in quotes if they contain space.",
         dest="variables",
     )
+    parser.add_argument(
+        "-v", "--verbose", action="store_true", help="Show detailed output."
+    )
+
     args = parser.parse_args()
     variables = parse_variables(args.variables)
+    if args.verbose:
+        logging.basicConfig(level=logging.INFO)
+        logging.info("Verbose mode enabled.")
+
     flow = Flow(args.flow_name, variables)
     flow.run()
 

@@ -25,7 +25,7 @@ class CreateImage(BaseFunction):
         """
         return {
             "name": "create_image",
-            "description": "Create an image from a description.",
+            "description": "Creates an image from a description. Returns the path to the image.",
             "parameters": {
                 "type": "object",
                 "properties": {
