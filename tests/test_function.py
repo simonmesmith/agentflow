@@ -2,7 +2,7 @@
 This module contains tests for the Function class.
 """
 
-import os
+import shutil
 
 from agentflow.function import Function
 from agentflow.output import Output
@@ -25,5 +25,4 @@ def test_function():
     assert (
         result == f"{output.output_path}/test.txt"
     ), "File path returned by execute method is incorrect"
-    os.remove(result)
-    os.rmdir(output.output_path)
+    shutil.rmtree(output.output_path)

@@ -2,7 +2,7 @@
 This module contains a test for the SaveFile class in the agentflow.functions.save_file module. It checks that the file saving process works correctly.
 """
 
-import os
+import shutil
 
 from agentflow.functions.save_file import SaveFile
 from agentflow.output import Output
@@ -20,5 +20,4 @@ def test_execute():
     assert result == f"{output.output_path}/test.txt"
 
     # Clean up the test environment by removing the created file and directory
-    os.remove(result)
-    os.rmdir(output.output_path)
+    shutil.rmtree(output.output_path)

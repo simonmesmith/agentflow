@@ -2,8 +2,8 @@
 This module contains a test for the CreateImage class in the agentflow.functions.create_image module. It uses the unittest.mock library to mock the OpenAI and requests APIs, and checks that the image creation process works correctly.
 """
 
-import os
 import re
+import shutil
 from unittest.mock import MagicMock, patch
 
 from agentflow.functions.create_image import CreateImage
@@ -37,5 +37,4 @@ def test_execute(mock_get, mock_create):
         assert f.read() == b"mock image content"
 
     # Clean up the test environment by removing the created file and directory
-    os.remove(image_path)
-    os.rmdir(output.output_path)
+    shutil.rmtree(output.output_path)
