@@ -4,6 +4,7 @@ Each task is processed by the LLM (Large Language Model) and the results are sav
 """
 
 import json
+import logging
 import os
 import re
 
@@ -133,11 +134,20 @@ class Flow:
 
         The flow is processed by the LLM and the results are saved in a JSON file.
         """
+
+        print(f"Running flow: {self.name}.")
+
         for task in self.tasks:
-            self._process_task(task)
+            pre_task_messages_length = len(self.messages)
+            try:
+                self._process_task(task)
+                logging.info(self.messages[pre_task_messages_length:])
+            except Exception as e:
+                logging.error(e)
+                return
 
         self.output.save("messages.json", self.messages)
-        print(f"Find outputs at {self.output.output_path}")
+        print(f"Output folder: {self.output.output_path}")
 
     def _get_initial_messages(self) -> list:
         """
@@ -168,8 +178,6 @@ class Flow:
         :param task: The task to be processed.
         :type task: Task
         """
-        print("Flow:", task.action)
-        print("Function:", task.settings.function_call)
         self.messages.append({"role": "user", "content": task.action})
 
         task.settings.function_call = (
@@ -192,7 +200,6 @@ class Flow:
         :param message: The message from the assistant.
         :type message: Message
         """
-        print("Assistant: ", message.content)
         self.messages.append({"role": "assistant", "content": message.content})
 
     def _process_function_call(self, message, task: Task) -> None:
