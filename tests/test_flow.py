@@ -4,6 +4,7 @@ This module contains tests for the Flow class.
 
 import json
 import os
+import shutil
 from types import SimpleNamespace
 from typing import Dict, List, Optional
 from unittest.mock import patch
@@ -91,8 +92,7 @@ def test_flow_basic(flows_path):
             == f"Response to {last_messages[-2]['content']}"
         )
 
-        os.remove(os.path.join(flow.output.output_path, "messages.json"))
-        os.rmdir(flow.output.output_path)
+        shutil.rmtree(flow.output.output_path)
 
 
 def test_flow_with_variables(flows_path):
@@ -125,7 +125,7 @@ def test_flow_with_variables(flows_path):
     ):
         _ = Flow("test_flow_with_variables", variables, flows_path)
 
-    os.rmdir(flow.output.output_path)
+    shutil.rmtree(flow.output.output_path)
 
 
 def test_flow_with_functions(flows_path):
@@ -141,4 +141,4 @@ def test_flow_with_functions(flows_path):
 
             assert len(flow.functions) == 2
 
-            os.rmdir(flow.output.output_path)
+            shutil.rmtree(flow.output.output_path)

@@ -4,6 +4,7 @@ This module contains tests for the Output class.
 
 import json
 import os
+import shutil
 
 from agentflow.output import Output
 
@@ -41,6 +42,5 @@ def test_save():
             {"test": "test1"},
             {"test": "test2"},
         ], "JSON file content is incorrect"
-    os.remove(json_file_path)
 
-    os.rmdir(output.output_path)
+    shutil.rmtree(output.output_path)
