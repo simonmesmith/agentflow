@@ -27,6 +27,7 @@ Now, you're ready to run Agentflow:
 
 * Run `python -m run --flow=example` to run a basic example flow.
 * To try a workflow with variables, run `python -m run --flow=example_with_variables --variables 'market=college students' 'price_point=$50'`.
+* To see task completion in real-time, use the `-v` verbose option, like this: `python -m run --flow=example -v`
 
 ## Creating Your Own Flows
 
