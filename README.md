@@ -2,36 +2,52 @@
 
 ![Python lint and test](https://github.com/simonmesmith/agentflow/actions/workflows/build.yml/badge.svg)
 
-Agentflow is designed to be a powerful yet user-friendly tool for creating and executing workflows powered by large language models (LLMs). With Agentflow, you can:
+Agentflow is a powerful yet user-friendly tool to run workflows powered by LLMs. You can:
 
-* **Craft workflows in plain English**: Workflows are written in human-readable JSON files.
-* **Develop custom functions**: Extend Agentflow's capabilities as per your needs.
-* **Generate autonomous outputs**: Maintain control while allowing the system to work independently.
+* **Write workflows in plain English** in human-readable JSON files.
+* **Use variables for dynamic outputs** that change based on user input.
+* **Build and execute custom functions** to go beyond text generation.
 
 ## Why Agentflow?
 
-While LLM interfaces like ChatGPT and Bard facilitate turn-by-turn conversations, they limit automation possibilities. Tools like AutoGPT and BabyAGI aim to address this by empowering LLMs to autonomously create and execute to-do lists. However, these tools can't always guarantee the desired outcomes.
+Agentflow fills the gap between chat and autonomous interfaces:
 
-Agentflow offers a balanced solution. It allows you to define workflows in an easy-to-understand JSON format, which LLMs then execute step-by-step. You can include functions in your workflows to enhance the LLMs' capabilities, enabling the execution of complex multi-step processes.
+* **Chat (e.g. ChatGPT) can't run workflows** because they're conversational.
+* **Autonomous (e.g. Auto-GPT) run them unreliably** because they have too much freedom.
 
-## Installation and Use
+Agentflow offers a balanced solution: Workflows that LLMs follow step-by-step.
+
+## Install and Use
 
 Agentflow is currently in development. To try it:
 
 1. Sign up for the [OpenAI API](https://platform.openai.com/overview) and get an [API key](https://help.openai.com/en/articles/4936850-where-do-i-find-my-secret-api-key)
 2. Clone or download this repository.
-3. Create a `.env` file from `example.env` and insert your OpenAI API key.
-4. Install the necessary dependencies by running `pip install -r requirements.txt`.
+3. Create a `.env` file from [example.env](https://github.com/simonmesmith/agentflow/blob/main/example.env) and add your OpenAI API key.
+4. Run `pip install -r requirements.txt` to install dependencies.
 
-Now, you're ready to run Agentflow:
+Now you can run flows from the command line, like this:
+```bash
+python -m run --flow=example
+```
 
-* Run `python -m run --flow=example` to run a basic example flow.
-* To try a workflow with variables, run `python -m run --flow=example_with_variables --variables 'market=college students' 'price_point=$50'`.
-* To see task completion in real-time, use the `-v` verbose option, like this: `python -m run --flow=example -v`
+### Optional Arguments
 
-## Creating Your Own Flows
+#### Use `variables` to pass variables to your flow
 
-Creating flows is straightforward. You can use [example.json](https://github.com/simonmesmith/agentflow/blob/main/agentflow/flows/example.json) or [example_with_variables.json](https://github.com/simonmesmith/agentflow/blob/main/agentflow/flows/example_with_variables.json) as a starting point. If you prefer to create a flow from scratch, use the following format:
+```bash
+python -m run --flow=example_with_variables --variables 'market=college students' 'price_point=$50'
+```
+
+#### Use `v` (verbose) to see task completion in real-time
+
+```bash
+python -m run --flow=example -v
+```
+
+## Create New Flows
+
+Copy [example.json](https://github.com/simonmesmith/agentflow/blob/main/agentflow/flows/example.json) or [example_with_variables.json](https://github.com/simonmesmith/agentflow/blob/main/agentflow/flows/example_with_variables.json) or create a flow from scratch in this format:
 
 ```json
 {
@@ -54,13 +70,17 @@ Creating flows is straightforward. You can use [example.json](https://github.com
 }
 ```
 
-## Creating Your Own Functions
+## Create New Functions
 
-You can extend Agentflow's capabilities by creating your own functions. To start, you can just copy a function file like [save_file.py](https://github.com/simonmesmith/agentflow/blob/main/agentflow/functions/save_file.py) and modify it.
+Copy [save_file.py](https://github.com/simonmesmith/agentflow/blob/main/agentflow/functions/save_file.py) and modify it, or follow these instructions (replace "function_name" with your function name):
 
-Alternatively, you can create a new function from scratch. First, create a new file in the [functions](https://github.com/simonmesmith/agentflow/tree/main/agentflow/functions) directory. The file name will be the function name. For instance, `functions/save_file.py` creates a function called `save_file`. Next, create a function class in the format `FunctionName` that inherits from `BaseFunction`. If you do this, and use the correct JSON function definition, you can incorporate your new function into your workflows. 
+1. **Create `function_name.py` in the [functions](https://github.com/simonmesmith/agentflow/tree/main/agentflow/functions) folder**.
+2. **Create a class within called `FunctionName`** that inherits from `BaseFunction`.
+3. **Add `get_definition()` and `execute()` in the class**. See descriptions of these in `BaseFunction`.
 
-Please note: It's a good idea to create tests for your functions, to make sure they behave the way you expect. Otherwise, you may not know whether you're getting errors from the LLM or from your function.
+That's it! You can now use your function in `function_call` as shown above. However, you should probably:
+
+4. **Add tests in [tests](https://github.com/simonmesmith/agentflow/tree/main/tests)**! Then you'll know if workflows are failing because of your function.
 
 ## License
 

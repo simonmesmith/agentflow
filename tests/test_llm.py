@@ -2,9 +2,22 @@
 This module contains tests for the LLM class.
 """
 
+import os
 from unittest.mock import MagicMock, patch
 
 from agentflow.llm import Settings
+
+
+def test_settings(monkeypatch):
+    """
+    Tests that key settings defaults are properly set.
+    """
+
+    # Test that we're properly setting the default model
+    if "OPENAI_DEFAULT_MODEL" in os.environ:
+        monkeypatch.delenv("OPENAI_DEFAULT_MODEL")
+    settings = Settings()
+    assert settings.model == "gpt-4"
 
 
 @patch("agentflow.llm.LLM")
