@@ -16,7 +16,7 @@ class Settings:
     This dataclass holds the settings for interacting with OpenAI's LLMs.
     """
 
-    model: str = "gpt-4"
+    model: str = os.getenv("OPENAI_DEFAULT_MODEL", "gpt-4")
     function_call: Optional[str] = None
     temperature: float = 1.0
     top_p: Optional[float] = None
