@@ -211,6 +211,16 @@ class Flow:
         :param task: The task to be processed.
         :type task: Task
         """
+        self.messages.append(
+            {
+                "role": "assistant",
+                "content": message.content,
+                "function_call": {
+                    "name": message.function_call.name,
+                    "arguments": message.function_call.arguments,
+                },
+            }
+        )
         function = Function(message.function_call.name, self.output)
         function_content = function.execute(message.function_call.arguments)
         self.messages.append(

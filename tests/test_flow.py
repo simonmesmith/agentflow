@@ -19,13 +19,29 @@ def mock_llm_respond(
     settings: Settings,
     messages: List[Dict[str, str]],
     functions: Optional[List[Dict[str, str]]] = None,
-) -> Dict[str, str]:
+) -> SimpleNamespace:
     """
     Mock the LLM respond method.
     """
-    return SimpleNamespace(
-        role="assistant", content=f"Response to {messages[-1]['content']}"
-    )
+    if settings.function_call != "none":
+        return SimpleNamespace(
+            role="assistant",
+            content=None,
+            function_call=SimpleNamespace(
+                name=settings.function_call["name"],
+                arguments=json.dumps({"arg1": "value1", "arg2": "value2"}),
+            ),
+        )
+    elif messages[-1]["role"] == "function":
+        return SimpleNamespace(
+            role="assistant",
+            content=f"Response to function call {messages[-1]['name']}.",
+        )
+    else:
+        return SimpleNamespace(
+            role="assistant",
+            content=f"Response to user message {messages[-1]['content']}.",
+        )
 
 
 def mock_function_definition(function_name: str) -> dict:
@@ -33,6 +49,13 @@ def mock_function_definition(function_name: str) -> dict:
     Mock a function definition.
     """
     return {"name": f"{function_name} definition"}
+
+
+def mock_function_execute(args_json: str) -> str:
+    """
+    Mock a function execute method.
+    """
+    return f"Response to function call with these arguments: {args_json}."
 
 
 @pytest.fixture
@@ -89,13 +112,16 @@ def test_flow_basic(flows_path):
         last_messages = last_call[0][1]
         assert (
             last_messages[-1]["content"]
-            == f"Response to {last_messages[-2]['content']}"
+            == f"Response to user message {last_messages[-2]['content']}."
         )
 
         shutil.rmtree(flow.output.output_path)
 
 
 def test_flow_with_variables(flows_path):
+    """
+    Test that we can load and run a flow with variables.
+    """
     variables = {
         "system_message_variable": "system_message_variable_value",
         "task_1_variable": "task_1_variable_value",
@@ -129,16 +155,43 @@ def test_flow_with_variables(flows_path):
 
 
 def test_flow_with_functions(flows_path):
+    """
+    Test that we can load and run a flow with functions.
+    """
     with patch("agentflow.flow.Function") as MockFunction:
         with patch("agentflow.flow.LLM") as MockLLM:
             mock_function = MockFunction.return_value
             mock_function.definition.side_effect = mock_function_definition
+            mock_function.execute.side_effect = mock_function_execute
 
             mock_llm = MockLLM.return_value
             mock_llm.respond.side_effect = mock_llm_respond
 
             flow = Flow("test_flow_with_functions", flows_path=flows_path)
 
+            # Ensure that we have the correct number of functions
             assert len(flow.functions) == 2
+
+            flow.run()
+
+            last_call = mock_llm.respond.call_args
+            last_messages = last_call[0][1]
+
+            # Ensure that we're calling functions correctly
+            assert last_messages[-3]["role"] == "assistant"
+            assert last_messages[-3]["function_call"] == {
+                "name": "test_function_for_task_3",
+                "arguments": '{"arg1": "value1", "arg2": "value2"}',
+            }
+            assert last_messages[-2]["role"] == "function"
+            assert last_messages[-2]["name"] == "test_function_for_task_3"
+            assert last_messages[-2]["content"] == (
+                'Response to function call with these arguments: {"arg1": "value1", "arg2": "value2"}.'
+            )
+
+            # Ensure that we're responding to functions correctly
+            assert last_messages[-1]["content"] == (
+                "Response to function call test_function_for_task_3."
+            )
 
             shutil.rmtree(flow.output.output_path)
