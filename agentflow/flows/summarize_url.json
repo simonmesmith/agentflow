@@ -1,0 +1,23 @@
+{
+    "system_message": "You summarize URLs.",
+    "tasks": [
+        {
+            "action": "Get text from the URL {url}.",
+            "settings": {
+                "function_call": "get_url"
+            }
+        },
+        {
+            "action": "Summarize the text.",
+            "settings": {
+                "function_call": "summarize_text"
+            }
+        },
+        {
+            "action": "Save the summary as summary.txt.",
+            "settings": {
+                "function_call": "save_file"
+            }
+        }
+    ]
+}
