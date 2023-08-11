@@ -8,6 +8,7 @@ from typing import Dict, List, Tuple
 import openai
 
 from agentflow.function import BaseFunction
+from agentflow.llm import LLM, Settings
 from agentflow.output import Output
 
 
@@ -69,17 +70,7 @@ class SummarizeText(BaseFunction):
         truncated_text = self._truncate_text(text_to_summarize)
         messages = self._prepare_messages(truncated_text, instructions)
         model, max_return_tokens = self._select_model(messages)
-
-        try:
-            response = openai.ChatCompletion.create(
-                model=model,
-                messages=messages,
-                max_tokens=max_return_tokens,
-                temperature=0,
-            )
-            return response.choices[0].message.content
-        except Exception as e:
-            raise Exception("Error summarizing text") from e
+        return self._summarize(model, messages, max_return_tokens)
 
     def _truncate_text(self, text: str) -> str:
         """
@@ -129,3 +120,25 @@ class SummarizeText(BaseFunction):
 
     def _calculate_tokens(self, messages: List[Dict[str, str]]) -> int:
         return int(len(str(messages)) / self.chars_per_token)
+
+    @staticmethod
+    def _summarize(
+        model: str, messages: List[Dict[str, str]], max_return_tokens: int
+    ) -> str:
+        """
+        Summarizes text.
+        :param model: The model to use for summarizing the text.
+        :type model: str
+        :param messages: The messages for the language model.
+        :type messages: list[dict[str, str]]
+        :param max_return_tokens: The maximum number of tokens to return.
+        :type max_return_tokens: int
+        """
+        settings = Settings(
+            model=model,
+            max_tokens=max_return_tokens,
+            temperature=0,
+        )
+        llm = LLM()
+        summary_message = llm.respond(settings, messages)
+        return summary_message.content

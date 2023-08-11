@@ -2,3 +2,4 @@ beautifulsoup4
 openai
 python-dotenv
 pytest
+tenacity

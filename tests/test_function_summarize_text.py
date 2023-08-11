@@ -1,5 +1,5 @@
 import shutil
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -76,27 +76,14 @@ def test_calculate_tokens(output):
     assert tokens == 254
 
 
-@patch("openai.ChatCompletion.create")
-def test_execute(mock_create, output):
+@patch("agentflow.functions.summarize_text.LLM")
+def test_execute(MockLLM, output):
     """
-    Tests the execute method of the SummarizeText class. It mocks the OpenAI API, and checks that the summarization process works correctly.
+    Tests the execute method of the SummarizeText class.
     """
+    mock_summary = "This is the summary."
+    MockLLM.return_value.respond.return_value.content = mock_summary
     summarizer = SummarizeText(output)
-    mock_create.return_value = MagicMock(
-        choices=[MagicMock(message=MagicMock(content="summary"))]
-    )
-    summary = summarizer.execute("text", "instructions")
-    assert summary == "summary"
 
-
-@patch("openai.ChatCompletion.create")
-def test_execute_exception(mock_create, output):
-    """
-    Tests that we're handling exceptions in the execute method of the SummarizeText class.
-    """
-    summarizer = SummarizeText(output)
-    mock_create.side_effect = Exception("OpenAI Error")
-    try:
-        summarizer.execute("text", "instructions")
-    except Exception as e:
-        assert str(e) == "Error summarizing text"
+    summary = summarizer.execute("Text to summarize.", "Instruction summary.")
+    assert summary == mock_summary

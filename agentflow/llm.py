@@ -8,6 +8,7 @@ from typing import Any, Dict, List, Optional
 
 import openai
 from dotenv import load_dotenv
+from tenacity import retry, wait_exponential
 
 
 @dataclass
@@ -37,6 +38,7 @@ class LLM:
         load_dotenv()
         openai.api_key = os.getenv("OPENAI_API_KEY")
 
+    @retry(wait=wait_exponential(multiplier=1, min=4, max=10))
     def respond(
         self,
         settings: Settings,

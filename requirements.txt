@@ -50,6 +50,8 @@ requests==2.31.0
     # via openai
 soupsieve==2.4.1
     # via beautifulsoup4
+tenacity==8.2.2
+    # via -r requirements.in
 tomli==2.0.1
     # via pytest
 tqdm==4.65.0
